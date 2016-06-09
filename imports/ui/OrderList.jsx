@@ -1,12 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
-import { Tasks } from '../api/tasks.js';
-import { Blocks } from '../api/blocks.js';
+import { Orders } from '../api/orders.js';
 import { Alert } from 'bitsherpa-rope';
-
-import Task from './Task.jsx';
-import CollaborativeEditor from './CollaborativeEditor.jsx';
 
 // App component - represents the whole app
 export default class App extends Component {
@@ -15,40 +11,38 @@ export default class App extends Component {
     event.preventDefault();
     // Find the text field via the React ref
     const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
-    Tasks.insert({
-      text,
+    Orders.insert({
+      name: text,
       createdAt: new Date(), // current time
     });
     // Clear form
     ReactDOM.findDOMNode(this.refs.textInput).value = '';
   }
 
-  renderTasks() {
-    return this.props.tasks.map((task) => (
-      <Task key={task._id} task={task} />
+  renderOrders() {
+    return this.props.orders.map((order) => (
+      <li key={order._id}>{order.name}</li>
     ));
   }
 
   render() {
     return (
+
       <div>
 
-        <h1>Todo List</h1>
-        <form className="new-task" onSubmit={this.handleSubmit.bind(this)} >
+        <h1>Order</h1>
+
+        <form className="new-order" onSubmit={this.handleSubmit.bind(this)} >
           <input
             type="text"
             ref="textInput"
             placeholder="Type to add new tasks"
           />
         </form>
-        <Alert style="danger">hello</Alert>
+
         <ul>
-          {this.renderTasks()}
+          {this.renderOrders()}
         </ul>
-
-        <h1>CollaborativeEditor</h1>
-
-        <CollaborativeEditor />
 
       </div>
     );
@@ -56,12 +50,11 @@ export default class App extends Component {
 }
 
 App.propTypes = {
-  tasks: PropTypes.array.isRequired,
+  orders: PropTypes.array.isRequired,
 };
 
 export default createContainer(() => {
   return {
-    tasks: Tasks.find({}, { sort: { createdAt: -1 } }).fetch(),
-    blocks: Blocks.find({}, { sort: { createdAt: -1 } }).fetch(),
+    orders: Orders.find({}, { sort: { createdAt: -1 } }).fetch()
   };
 }, App);
