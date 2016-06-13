@@ -2,26 +2,22 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
-import { Alert } from 'bitsherpa-rope';
+import { Alert, Button } from './bootstrap/index.jsx';
 
 // App component - represents the whole app
-export default class App extends Component {
+export default class OrderList extends Component {
 
-  handleSubmit(event) {
-    event.preventDefault();
-    // Find the text field via the React ref
-    const text = ReactDOM.findDOMNode(this.refs.textInput).value.trim();
-    Orders.insert({
-      name: text,
-      createdAt: new Date(), // current time
+  insert(event){
+    var id = Orders.insert({
+      name: "name",
+      createdAt: new Date(),
     });
-    // Clear form
-    ReactDOM.findDOMNode(this.refs.textInput).value = '';
+    FlowRouter.go("/orders/" + id)
   }
 
   renderOrders() {
     return this.props.orders.map((order) => (
-      <li key={order._id}>{order.name}</li>
+      <li key={order._id}><a href={"/orders/" + order._id}>{order.name}</a></li>
     ));
   }
 
@@ -32,13 +28,7 @@ export default class App extends Component {
 
         <h1>Order</h1>
 
-        <form className="new-order" onSubmit={this.handleSubmit.bind(this)} >
-          <input
-            type="text"
-            ref="textInput"
-            placeholder="Type to add new tasks"
-          />
-        </form>
+        <Button style="primary" onClick={this.insert.bind(this)}>New Order</Button>
 
         <ul>
           {this.renderOrders()}
@@ -49,12 +39,12 @@ export default class App extends Component {
   }
 }
 
-App.propTypes = {
+OrderList.propTypes = {
   orders: PropTypes.array.isRequired,
 };
 
 export default createContainer(() => {
   return {
-    orders: Orders.find({}, { sort: { createdAt: -1 } }).fetch()
+    orders: Orders.find({}, { sort: { createdAt: -1 } }).fetch(),
   };
-}, App);
+}, OrderList);

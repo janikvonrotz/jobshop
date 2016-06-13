@@ -5,8 +5,9 @@ import React from 'react';
 const App = (props) => (
   <div>
     <section id="menu">
-      <a href="/">Home</a>
+      <a href="/">Dashboard</a>
       <a href="/orders">Orders</a>
+      <a href="/productions">Productions</a>
     </section>
     <div className="container">{props.main}</div>
   </div>
