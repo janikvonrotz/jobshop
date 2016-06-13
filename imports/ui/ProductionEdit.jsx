@@ -29,7 +29,7 @@ export default class ProductionEdit extends Component {
         <Label>Name</Label>
         <Input
         name="name"
-        value={this.props.production.name}
+        defaultValue={this.props.production.name}
         onChange={this.update.bind(this)} />
         </Form>
         <Button style="danger" onClick={this.remove.bind(this)}>Delete</Button>

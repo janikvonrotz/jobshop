@@ -11,6 +11,7 @@ export default class OrderList extends Component {
     var id = Orders.insert({
       name: "name",
       createdAt: new Date(),
+      productions: [],
     });
     FlowRouter.go("/orders/" + id)
   }
