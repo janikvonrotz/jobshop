@@ -22,9 +22,12 @@ export default class ProductionEdit extends Component {
   }
 
   render() {
-    console.log(this.props)
+    if(!this.props.production){return (<Alert style="warning">Production loading ...</Alert>)}
     return (
       <div className="production-edit">
+
+        <h1>Edit production</h1>
+
         <Form>
         <Label>Name</Label>
         <Input
@@ -43,7 +46,6 @@ ProductionEdit.propTypes = {
 };
 
 export default createContainer(({productionId}) => {
-  console.log(productionId)
   return {
     production: Productions.find({_id: productionId}).fetch()[0],
   };

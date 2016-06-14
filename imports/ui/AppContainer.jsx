@@ -1,6 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React from 'react';
+import 'notie/dist/notie.css';
 
 const App = (props) => (
   <div>

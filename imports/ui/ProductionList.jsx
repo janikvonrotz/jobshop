@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { Productions } from '../api/productions.js';
 import { Alert, Button } from './bootstrap/index.jsx';
 
-// App component - represents the whole app
 export default class ProductionList extends Component {
 
   insert(event){

@@ -1,6 +1,4 @@
 import React from 'react';
-// import { Meteor } from 'meteor/meteor';
-// import { render } from 'react-dom';
 import { FlowRouter } from 'meteor/kadira:flow-router';
 import { mount } from 'react-mounter';
 
@@ -10,9 +8,6 @@ import OrderList from '../imports/ui/OrderList.jsx';
 import OrderEdit from '../imports/ui/OrderEdit.jsx';
 import ProductionList from '../imports/ui/ProductionList.jsx';
 import ProductionEdit from '../imports/ui/ProductionEdit.jsx';
-// Meteor.startup(() => {
-//   render(<App />, document.getElementById('render-target'));
-// });
 
 FlowRouter.route('/', {
   name: 'index',

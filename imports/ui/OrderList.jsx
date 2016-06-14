@@ -27,7 +27,7 @@ export default class OrderList extends Component {
 
       <div>
 
-        <h1>Order</h1>
+        <h1>Orders</h1>
 
         <Button style="primary" onClick={this.insert.bind(this)}>New Order</Button>
 

@@ -1,19 +1,16 @@
+
+# Flowshop Software
+
+# source
+
+Start new Meteor Project
 https://www.meteor.com/tutorials/react/creating-an-app
 
-# Project
+Drag and drop
+https://jsfiddle.net/hrohxze0/6/
 
-Flowshop Software
+Chart
+http://canvasjs.com/docs/charts/chart-types/html5-range-bar-chart/
 
-
-# Project DraftMeteor
-
-on change
-
-Get current block and its position
-Add it to Collection {_id, index, block, type: update, remove, insert}
-On collection update add block to array
-On new block push into content state
-
-
-https://www.meteor.com/tutorials/blaze/creating-an-app
-https://facebook.github.io/draft-js/docs/api-reference-content-state.html#content
+If-Else in React
+https://facebook.github.io/react/tips/if-else-in-JSX.html

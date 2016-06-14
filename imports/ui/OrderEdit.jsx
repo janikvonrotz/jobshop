@@ -4,6 +4,8 @@ import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
 import { Alert, Form, Input, Label, Button, Modal, Select, ListGroup } from './bootstrap/index.jsx';
+import '../lib/array-prototype-move';
+import * as Notification from 'notie';
 
 // App component - represents the whole app
 export default class OrderEdit extends Component {
@@ -36,30 +38,43 @@ export default class OrderEdit extends Component {
   }
 
   addProduction(){
-    console.log(ReactDOM.findDOMNode(this.refs.duration).value, ReactDOM.findDOMNode(this.refs.production).value)
     var order = this.props.order;
-    var position = order.productions.length + 1;
     var prodName = ReactDOM.findDOMNode(this.refs.production).value;
     var duration = ReactDOM.findDOMNode(this.refs.duration).value;
     var refId = _.where(this.props.productions, {name: prodName})[0]._id;
-    order.productions.push({ref_id: refId, name: prodName, duration: duration, position: position});
-    Orders.update(order._id, { $set: {productions: order.productions}});
+    if(_.find(order.productions, (item) => { return item.ref_id == refId })){
+      Notification.alert(3, 'Already in list!', 2.5);
+    }else{
+      order.productions.push({ref_id: refId, name: prodName, duration: duration});
+      Orders.update(order._id, { $set: {productions: order.productions}});
+    }
     this.toggleModal();
+  }
+
+  handleDrop(sourceId, targetId){
+    var list = this.props.order.productions;
+    var source =  _.find(list, (item) => { return item.ref_id == sourceId })
+    var indexSource = list.indexOf(source);
+    var target = _.find(list, (item) => { return item.ref_id == targetId })
+    var indexTarget = list.indexOf(target);
+    list.move(indexSource, indexTarget);
+    Orders.update(this.props.order._id, { $set: {productions: list}});
   }
 
   renderProductionList(productions){
     var items = productions.map((item) => {
-      return {key: item.ref_id, label: item.name, labelPill: item.duration, position: item.position}
+      return {key: item.ref_id, label: item.name, labelPill: item.duration}
     });
-    return (<ListGroup draggable="true" items={items} />);
+    return (<ListGroup onDrop={this.handleDrop.bind(this)} draggable="true" items={items} />);
   }
 
   render() {
-    console.log(this.props)
-    console.log(this.state)
-
+    if(!this.props.order){return (<Alert style="warning">Order loading ...</Alert>)}
     return (
       <div className="order-edit">
+
+        <h1>Edit order</h1>
+          
         <Form>
         <Label>Name</Label>
         <Input
@@ -98,7 +113,6 @@ OrderEdit.propTypes = {
 };
 
 export default createContainer(({orderId}) => {
-  console.log(orderId)
   return {
     order: Orders.find({_id: orderId}).fetch()[0],
     productions: Productions.find({}, { sort: { createdAt: -1 } }).fetch(),

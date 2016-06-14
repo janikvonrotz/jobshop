@@ -8,6 +8,7 @@
     "bitsherpa-rope": "^1.0.10",
     "draft-js": "^0.7.0",
     "meteor-node-stubs": "~0.2.0",
+    "notie": "^3.2.0",
     "react": "^15.1.0",
     "react-addons-pure-render-mixin": "^15.1.0",
     "react-dom": "^15.1.0",
