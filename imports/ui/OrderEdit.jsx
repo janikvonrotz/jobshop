@@ -66,7 +66,7 @@ export default class OrderEdit extends Component {
     var items = productions.map((production) => {
         var refProd = _.where(this.props.productions, {_id: production.ref_id})
         var name = "Production deleted."
-        if(refProd.lenght > 0){
+        if(refProd.length > 0){
           name = refProd[0].name
         }
         return {key: production.ref_id, label: name, labelPill: production.duration}
