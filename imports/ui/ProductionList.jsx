@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Productions } from '../api/productions.js';
-import { Alert, Button } from './bootstrap/index.jsx';
+import { Alert, Button, ListGroup, GridRow, GridColumn, PageHeader } from './bootstrap/index.jsx';
 
 export default class ProductionList extends Component {
 
@@ -15,25 +15,19 @@ export default class ProductionList extends Component {
   }
 
   renderProductions() {
-    return this.props.productions.map((production) => (
-      <li key={production._id}><a href={"/productions/" + production._id}>{production.name}</a></li>
-    ));
+    var items = this.props.productions.map((item) => {
+      return {key: item._id, label: item.name, href: "/productions/" + item._id };
+    });
+    return (<ListGroup linked="true" items={items} />);
   }
 
   render() {
     return (
-
-      <div>
-
-        <h1>Production</h1>
-
-        <Button style="primary" onClick={this.insert.bind(this)}>New Production</Button>
-
-        <ul>
-          {this.renderProductions()}
-        </ul>
-
-      </div>
+      <GridRow className="production-list"><GridColumn className="col-md-8 col-md-offset-2">
+        <PageHeader tag="h1">Production</PageHeader>
+        <p><Button style="primary" onClick={this.insert.bind(this)}>New Production</Button></p>
+        {this.renderProductions()}
+      </GridColumn></GridRow>
     );
   }
 }

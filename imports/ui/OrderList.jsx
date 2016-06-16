@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
-import { Alert, Button } from './bootstrap/index.jsx';
+import { Alert, Button, GridRow, GridColumn, PageHeader, ListGroup } from './bootstrap/index.jsx';
 
 // App component - represents the whole app
 export default class OrderList extends Component {
@@ -17,25 +17,19 @@ export default class OrderList extends Component {
   }
 
   renderOrders() {
-    return this.props.orders.map((order) => (
-      <li key={order._id}><a href={"/orders/" + order._id}>{order.name}</a></li>
-    ));
+    var items = this.props.orders.map((item) => {
+      return {key: item._id, label: item.name, href: "/orders/" + item._id };
+    });
+    return (<ListGroup linked="true" items={items} />);
   }
 
   render() {
     return (
-
-      <div>
-
-        <h1>Orders</h1>
-
-        <Button style="primary" onClick={this.insert.bind(this)}>New Order</Button>
-
-        <ul>
-          {this.renderOrders()}
-        </ul>
-
-      </div>
+      <GridRow className="order-list"><GridColumn className="col-md-8 col-md-offset-2">
+        <PageHeader tag="h1">Orders</PageHeader>
+        <p><Button style="primary" onClick={this.insert.bind(this)}>New Order</Button></p>
+        {this.renderOrders()}
+      </GridColumn></GridRow>
     );
   }
 }

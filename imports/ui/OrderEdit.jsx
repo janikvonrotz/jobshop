@@ -3,11 +3,10 @@ import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, Input, Label, Button, Modal, Select, ListGroup } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, Modal, Select, ListGroup, GridRow, GridColumn, PageHeader } from './bootstrap/index.jsx';
 import '../lib/array-prototype-move';
 import * as Notification from 'notie';
 
-// App component - represents the whole app
 export default class OrderEdit extends Component {
 
   constructor(props) {
@@ -71,21 +70,23 @@ export default class OrderEdit extends Component {
   render() {
     if(!this.props.order){return (<Alert style="warning">Order loading ...</Alert>)}
     return (
-      <div className="order-edit">
+      <GridRow className="order-edit"><GridColumn className="col-md-8 col-md-offset-2">
+        <PageHeader tag="h1">Order Edit</PageHeader>
 
-        <h1>Edit order</h1>
-          
         <Form>
-        <Label>Name</Label>
-        <Input
-        name="name"
-        defaultValue={this.props.order.name}
-        onChange={this.update.bind(this)} />
+          <FormGroup>
+            <Label>Name</Label>
+            <Input
+            name="name"
+            defaultValue={this.props.order.name}
+            onChange={this.update.bind(this)} />
+          </FormGroup>
         </Form>
-        <Button style="primary" onClick={this.toggleModal.bind(this)}>Add Production</Button>
+        <p><Button style="primary" onClick={this.toggleModal.bind(this)}>Add Production</Button></p>
 
         {this.renderProductionList(this.props.order.productions)}
-
+        <p></p>
+        
         <Modal
         showModal={this.state.showModal}
         title="Add Production"
@@ -93,17 +94,23 @@ export default class OrderEdit extends Component {
         cancelLabel="Cancel"
         onConfirm={this.addProduction.bind(this)}
         confirmLabel="Add">
-          <Label>Production</Label>
-          <Select ref="production" options={this.props.productions.map((item) => {
-            return {key: item._id, value: item.name};
-          })}/>
-          <Label>duration</Label>
-          <Input
-          ref="duration" type="number" defaultValue="0" />
+          <Form>
+            <FormGroup>
+              <Label>Production</Label>
+              <Select ref="production" options={this.props.productions.map((item) => {
+                return {key: item._id, value: item.name};
+              })}/>
+            </FormGroup>
+            <FormGroup>
+              <Label>duration</Label>
+              <Input
+              ref="duration" type="number" defaultValue="1" />
+            </FormGroup>
+          </Form>
         </Modal>
 
-        <Button style="danger" onClick={this.remove.bind(this)}>Delete</Button>
-      </div>
+        <p><Button style="danger" onClick={this.remove.bind(this)}>Delete</Button></p>
+      </GridColumn></GridRow>
     );
   }
 }

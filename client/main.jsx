@@ -19,7 +19,7 @@ FlowRouter.route('/', {
 });
 
 FlowRouter.route('/orders', {
-  name: 'index',
+  name: 'order.list',
   action() {
     mount(AppContainer, {
       main: <OrderList/>,
@@ -28,7 +28,7 @@ FlowRouter.route('/orders', {
 });
 
 FlowRouter.route('/orders/:orderId', {
-  name: 'index',
+  name: 'order.edit',
   action({orderId}) {
     mount(AppContainer, {
       main: <OrderEdit orderId={orderId}/>,
@@ -37,7 +37,7 @@ FlowRouter.route('/orders/:orderId', {
 });
 
 FlowRouter.route('/productions', {
-  name: 'index',
+  name: 'production.list',
   action() {
     mount(AppContainer, {
       main: <ProductionList/>,
@@ -46,7 +46,7 @@ FlowRouter.route('/productions', {
 });
 
 FlowRouter.route('/productions/:productionId', {
-  name: 'index',
+  name: 'production.edit',
   action({productionId}) {
     mount(AppContainer, {
       main: <ProductionEdit productionId={productionId}/>,

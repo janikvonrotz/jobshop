@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, Input, Label, Button } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, PageHeader } from './bootstrap/index.jsx';
 
 // App component - represents the whole app
 export default class ProductionEdit extends Component {
@@ -24,19 +24,19 @@ export default class ProductionEdit extends Component {
   render() {
     if(!this.props.production){return (<Alert style="warning">Production loading ...</Alert>)}
     return (
-      <div className="production-edit">
-
-        <h1>Edit production</h1>
-
+      <GridRow className="production-edit"><GridColumn className="col-md-8 col-md-offset-2">
+        <PageHeader tag="h1">Production Edit</PageHeader>
         <Form>
-        <Label>Name</Label>
-        <Input
-        name="name"
-        defaultValue={this.props.production.name}
-        onChange={this.update.bind(this)} />
+          <FormGroup>
+            <Label>Name</Label>
+            <Input
+            name="name"
+            defaultValue={this.props.production.name}
+            onChange={this.update.bind(this)} />
+          </FormGroup>
         </Form>
-        <Button style="danger" onClick={this.remove.bind(this)}>Delete</Button>
-      </div>
+        <p><Button style="danger" onClick={this.remove.bind(this)}>Delete</Button></p>
+      </GridColumn></GridRow>
     );
   }
 }

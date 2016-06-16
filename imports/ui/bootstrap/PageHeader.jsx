@@ -1,5 +1,7 @@
 import React from 'react';
 
+// PageHeader: { tag }
+
 export default class PageHeader extends React.Component {
 
   renderPageHeader(){

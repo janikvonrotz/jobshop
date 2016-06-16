@@ -2,22 +2,25 @@ import { Meteor } from 'meteor/meteor';
 import { createContainer } from 'meteor/react-meteor-data';
 import React from 'react';
 import 'notie/dist/notie.css';
+import { Navbar, NavbarNav, GridColumn, GridRow } from './bootstrap/index.jsx';
 
 const App = (props) => (
-  <div>
-    <section id="menu">
-      <a href="/">Dashboard</a>
-      <a href="/orders">Orders</a>
-      <a href="/productions">Productions</a>
-    </section>
-    <div className="container">{props.main}</div>
+  <div className="app-root container">
+    <Navbar id="app-header" brandLink="/" brand="Flowshop">
+      <NavbarNav items={ props.items.left } />
+    </Navbar>
+    {props.main}
   </div>
 );
 
 export default AppContainer = createContainer(props => {
-  // props here will have `main`, passed from the router
-  // anything we return from this function will be *added* to it
   return {
-    // user: Meteor.user(),
+    items: {
+      left: [
+        { uid: 'index', href: '/', label: 'Dashboard' },
+        { uid: 'order.list', href: '/orders', label: 'Orders' },
+        { uid: 'production.list', href: '/productions', label: 'Productions' }
+      ]
+    }
   };
 }, App);
