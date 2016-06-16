@@ -10,6 +10,7 @@ export default class ProductionList extends Component {
     var id = Productions.insert({
       name: "name",
       createdAt: new Date(),
+      color: "#000000",
     });
     FlowRouter.go("/productions/" + id)
   }

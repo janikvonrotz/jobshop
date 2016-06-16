@@ -33,3 +33,8 @@ body.modal-open {
 .modal-content{
   border-radius: 0;
 }
+
+.input-color{
+  height: 2.5em;
+  width: 3em;
+}

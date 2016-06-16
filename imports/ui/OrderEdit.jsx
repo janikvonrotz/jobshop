@@ -44,7 +44,7 @@ export default class OrderEdit extends Component {
     if(_.find(order.productions, (item) => { return item.ref_id == refId })){
       Notification.alert(3, 'Already in list!', 2.5);
     }else{
-      order.productions.push({ref_id: refId, name: prodName, duration: duration});
+      order.productions.push({ref_id: refId, duration: duration});
       Orders.update(order._id, { $set: {productions: order.productions}});
     }
     this.toggleModal();
@@ -61,9 +61,17 @@ export default class OrderEdit extends Component {
   }
 
   renderProductionList(productions){
-    var items = productions.map((item) => {
-      return {key: item.ref_id, label: item.name, labelPill: item.duration}
+
+    // get name and prepare for the list
+    var items = productions.map((production) => {
+        var refProd = _.where(this.props.productions, {_id: production.ref_id})
+        var name = "Production deleted."
+        if(refProd.lenght > 0){
+          name = refProd[0].name
+        }
+        return {key: production.ref_id, label: name, labelPill: production.duration}
     });
+
     return (<ListGroup onDrop={this.handleDrop.bind(this)} draggable="true" items={items} />);
   }
 
@@ -86,7 +94,7 @@ export default class OrderEdit extends Component {
 
         {this.renderProductionList(this.props.order.productions)}
         <p></p>
-        
+
         <Modal
         showModal={this.state.showModal}
         title="Add Production"
@@ -102,7 +110,7 @@ export default class OrderEdit extends Component {
               })}/>
             </FormGroup>
             <FormGroup>
-              <Label>duration</Label>
+              <Label>Duration</Label>
               <Input
               ref="duration" type="number" defaultValue="1" />
             </FormGroup>

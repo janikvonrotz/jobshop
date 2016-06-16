@@ -34,6 +34,14 @@ export default class ProductionEdit extends Component {
             defaultValue={this.props.production.name}
             onChange={this.update.bind(this)} />
           </FormGroup>
+          <FormGroup>
+            <Label>Color</Label>
+            <Input
+            name="color"
+            type="color"
+            defaultValue={this.props.production.color}
+            onChange={this.update.bind(this)} />
+          </FormGroup>
         </Form>
         <p><Button style="danger" onClick={this.remove.bind(this)}>Delete</Button></p>
       </GridColumn></GridRow>
