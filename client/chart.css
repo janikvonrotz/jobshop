@@ -1,0 +1,25 @@
+.chart{
+
+}
+
+.chart-row{
+  display: flex;
+  border-spacing: 10px;
+}
+
+.chart-row-head{
+  float: left;
+  width: 5em;
+}
+
+.chart-column{
+  position: absolute;
+}
+
+.chart-ticks{
+  margin-left: 5em;
+}
+
+.chart-tick{
+  position: absolute;
+}

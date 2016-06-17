@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Alert, Button, GridRow, GridColumn, PageHeader, ListGroup } from './bootstrap/index.jsx';
 
-// App component - represents the whole app
 export default class OrderList extends Component {
 
   insert(event){
