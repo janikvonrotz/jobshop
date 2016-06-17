@@ -1,10 +1,9 @@
-.chart{
-
+.charts{
+  overflow: auto;
 }
 
 .chart-row{
   display: flex;
-  border-spacing: 10px;
 }
 
 .chart-row-head{
@@ -18,8 +17,10 @@
 
 .chart-ticks{
   margin-left: 5em;
+  height: 3em;
 }
 
 .chart-tick{
+  border-left: solid 0.1em lightgrey;
   position: absolute;
 }

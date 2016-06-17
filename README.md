@@ -1,6 +1,14 @@
 
 # Flowshop Software
 
+# Todo
+
+Enhance Positioning system
+
+begin with the first position.
+if tasks is sheduled, take the next of this order into position
+this means position specific on an order
+
 # source
 
 Start new Meteor Project

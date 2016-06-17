@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { Alert} from './bootstrap/index.jsx';
+import { Alert } from './bootstrap/index.jsx';
 
 export default class Chart extends Component {
 
@@ -26,7 +26,6 @@ export default class Chart extends Component {
   }
 
   renderColumn(cell){
-    console.log(cell)
 
     var length = (cell.end-cell.start) * this.props.factor;
     var marginLeft = (cell.start * this.props.factor);
@@ -48,10 +47,10 @@ export default class Chart extends Component {
     var ticks = [];
     for (var i = 0; i <= duration; i++){
       var tickStyle={
-        marginLeft: i + 'em'
+        marginLeft: (i * this.props.factor) + 'em'
       }
       ticks.push(
-        <div className="chart-tick" style={tickStyle}>
+        <div key={i} className="chart-tick" style={tickStyle}>
           <span>{i}</span>
         </div>
       );
@@ -64,7 +63,6 @@ export default class Chart extends Component {
   }
 
   render() {
-    console.log(this.props.data);
     if(!this.props.data){return (<Alert style="danger">No Data.</Alert>);}
     return (
       <div className="chart">

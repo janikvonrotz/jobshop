@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, FormGroup, Input, Label, Button } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn } from './bootstrap/index.jsx';
 import Chart from './Chart.jsx';
 import * as Notification from 'notie';
 
@@ -16,7 +16,16 @@ export default class App extends Component {
   }
 
   calculate(){
+
+    // get form input
     var rounds = ReactDOM.findDOMNode(this.refs.rounds).value;
+    var maxDuration = ReactDOM.findDOMNode(this.refs.maxDuration).value;
+
+    // reset datasets
+    this.setState({
+      datasets: []
+    });
+    var datasets = [];
 
     // get data
     var orders = Orders.find({}).fetch();
@@ -54,86 +63,128 @@ export default class App extends Component {
       // one array for all tasks
       tasks = tasks.concat(ordertasks)
     });
+    
+    // create mutliple result sets
+    for(var i = 1; i <= rounds; i++){
 
-    // planned tasks belong into this array
-    var schedTasks = [];
+      // planned tasks belong into this array
+      var schedTasks = [];
 
-    // get maximum position of all tasks
-    var maxPos = _.sortBy(tasks, (task) => {return -task.position})[0].position;
+      // get maximum position of all tasks
+      var maxPos = _.sortBy(tasks, (task) => {return -task.position})[0].position;
 
-    // for each position schedule the tasks
-    for (pos = 1; pos <= maxPos; pos++) {
+      // for each position schedule the tasks
+      for (pos = 1; pos <= maxPos; pos++) {
 
-      // get task of this position
-      var taskByPos = _.where(tasks, {position: pos});
+        // get tasks for current position
+        var taskByPos = _.where(tasks, {position: pos});
 
-      while(taskByPos.length > 0){
+        // process every task in this position
+        while(taskByPos.length > 0){
 
-        // get random element
-        var task = taskByPos[Math.floor(Math.random()*taskByPos.length)];
+          // get random task
+          var task = taskByPos[Math.floor(Math.random()*taskByPos.length)];
 
-        // remove it from the list
-        taskByPos = _.without(taskByPos, task);
+          // remove it from the position list
+          taskByPos = _.without(taskByPos, task);
 
-        // check if common tasks are in scheduled
-        beforeTask = _.first(_.sortBy(_.where(schedTasks, {productionId: task.productionId}), (o) => {return -o.end}));
+          // check for potential conflict tasks
+          var conflictTasks = _.filter(schedTasks, (f) => {
+            return (f.productionId == task.productionId) || (f.orderName === task.orderName)
+          });
 
-        // set schedule
-        if(beforeTask){
-          task.start = beforeTask.end;
-          task.end = task.start + task.duration;
-        }else{
-          task.start = 0;
-          task.end = task.start + task.duration;
+          // sort the list by start
+          conflictTasks = _.sortBy(conflictTasks, (o) => {return o.start});
+
+          console.log("task", task.orderName, task.productionName);
+          console.log("conflictTasks", conflictTasks);
+
+          // look for a gap between end and start of all conflict
+          var start = 0;
+          var beforeTask = {};
+          var afterTask = {};
+          _.each(conflictTasks, (conflictTask) => {
+
+            // get minimal end
+            var end = (start + task.duration);
+
+            console.log(start, end, conflictTask)
+            console.log("end", (end < conflictTask.end) && (conflictTask.start < end) )
+            console.log("start", (conflictTask.start < start) && (start < conflictTask.end) )
+            console.log("zero", (conflictTask.start == 0) && (start == 0) )
+
+            // if end before conflict task start then save gap
+            if(
+            // ((conflictTask.start == 0) && (start == 0)) ||
+            ((end < conflictTask.end) && (conflictTask.start <= end)) ||
+            ((conflictTask.start <= start) && (start <= conflictTask.end))){
+              afterTask = conflictTask;
+              beforeTask = {};
+              start = conflictTask.end;
+            // else reset gap and move start and save gap
+            }else{
+              afterTask = {};
+              beforeTask = {
+                start: start,
+                end: end,
+              }
+            }
+          });
+
+          // set schedule
+          if(!_.isEmpty(beforeTask)){
+            console.log("beforeTask", beforeTask.orderName, beforeTask.productionName, beforeTask.start, beforeTask.end);
+            task.start = beforeTask.start;
+            task.end = beforeTask.end;
+          }else if(!_.isEmpty(afterTask)){
+            console.log("afterTask", afterTask.orderName, afterTask.productionName, afterTask.start, afterTask.end);
+            task.start = afterTask.end;
+            task.end = task.start + task.duration;
+          }else{
+            task.start = 0;
+            task.end = task.start + task.duration;
+          }
+
+          console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
+
+          // add it to scheduled tasks
+          schedTasks.push(task);
         }
 
-        // check if order tasks is in the same schedule
-        // task start must be before other task end
-        orderTask = _.first(_.sortBy(_.filter(schedTasks, (f) => {
-          return (f.end > task.start && f.orderName == task.orderName);
-        }), (o) => {return -o.end}));
-        // console.log(orderTask);
+      // end of position loop
+      }
 
-        // update schedule
-        if(orderTask){
-          task.start = orderTask.end;
-          task.end = task.start + task.duration;
+      // get the full duration to process tasks
+      var duration = _.first(_.sortBy(schedTasks, (task) => {return -task.end})).end;
+
+      // format data for charting
+      var data = schedTasks.map((task) => {
+        return {
+          labelY: task.orderName,
+          labelItem: task.productionName,
+          start: task.start,
+          end: task.end,
+          color: task.color,
         }
+      });
 
-        // console.log(task.orderName, task.productionName, task.start, task.end);
+      // sort by order label
+      var data = _.sortBy(data, (task) => {return task.labelY});
 
-        // add it to scheduled tasks
-        schedTasks.push(task);
-      }
-    }
+      // groupBy label
+      data = _.groupBy(data, (g) => {return g.labelY});
 
-    // get the full duration to process tasks
-    var duration = _.first(_.sortBy(schedTasks, (task) => {return -task.end})).end;
-
-    // format data for charting
-    var data = schedTasks.map((task) => {
-      return {
-        labelY: task.orderName,
-        labelItem: task.productionName,
-        start: task.start,
-        end: task.end,
-        color: task.color,
-      }
-    });
-
-    // sort by order label
-    var data = _.sortBy(data, (task) => {return task.labelY});
-
-    // groupBy Y label
-    data = _.groupBy(data, (g) => {return g.labelY});
-
-    // update state
-    this.setState({
-      datasets: [{
+      // update dataset state
+      datasets.push({
         duration: duration,
         data: data
-      }]
-    });
+      });
+      this.setState({
+        datasets: datasets
+      });
+
+    // end of a round
+    }
 
     // Meteor.call("calculate", rounds, (err, res) => {
     //   if(err){
@@ -145,19 +196,46 @@ export default class App extends Component {
     // })
   }
 
+  // render charts foreach dataset
+  renderCharts(datasets){
+    return datasets.map((dataset) => {
+      return (<Chart data={dataset} factor="3" />);
+    })
+  }
+
   render() {
     return (
-      <div>
+      <div className="dashboard">
         <h1>Dashboard</h1>
+        <GridRow>
+        <GridColumn className="col-sm-4">
+
         <Form>
           <FormGroup>
             <Label>Rounds</Label>
             <Input
-            ref="rounds" type="number" defaultValue="100" />
+            ref="rounds" type="number" defaultValue="1" />
+          </FormGroup>
+          <FormGroup>
+            <Label>Duration Maximum</Label>
+            <Input
+            ref="maxDuration" type="number" defaultValue="100" />
           </FormGroup>
         </Form>
         <p><Button style="primary" onClick={this.calculate.bind(this)}>Calculate</Button></p>
-        <Chart data={this.state.datasets[0]} factor="3" />
+
+        </GridColumn>
+        <GridColumn className="col-sm-6">
+          <p>Tabulist</p>
+        </GridColumn>
+        </GridRow>
+        <GridRow className="charts">
+        <GridColumn className="col-sm-12">
+
+        {this.renderCharts(this.state.datasets)}
+
+        </GridColumn>
+        </GridRow>
       </div>
     );
   }
