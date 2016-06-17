@@ -63,7 +63,7 @@ export default class App extends Component {
       // one array for all tasks
       tasks = tasks.concat(ordertasks)
     });
-    
+
     // create mutliple result sets
     for(var i = 1; i <= rounds; i++){
 
@@ -116,7 +116,7 @@ export default class App extends Component {
             // if end before conflict task start then save gap
             if(
             // ((conflictTask.start == 0) && (start == 0)) ||
-            ((end < conflictTask.end) && (conflictTask.start <= end)) ||
+            ((end <= conflictTask.end) && (conflictTask.start <= end)) ||
             ((conflictTask.start <= start) && (start <= conflictTask.end))){
               afterTask = conflictTask;
               beforeTask = {};
