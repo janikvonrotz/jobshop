@@ -1,11 +1,11 @@
 {
-  "name": "playground",
+  "name": "flowshop",
   "private": true,
   "scripts": {
     "dev": "meteor run"
   },
   "dependencies": {
-    "bitsherpa-rope": "^1.0.10",
+    "classnames": "^2.2.5",
     "draft-js": "^0.7.0",
     "meteor-node-stubs": "~0.2.0",
     "notie": "^3.2.0",
