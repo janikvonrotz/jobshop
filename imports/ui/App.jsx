@@ -79,9 +79,8 @@ export default class App extends Component {
 
       // as long as the sum of position of all orders is not equel to amount of position
       var sum = orders.length;
-      // for(var i = 1; i <= rounds; i++){
       while(sum < (tasks.length + orders.length)){
-        console.log(sum, tasks.length);
+        // console.log(sum, tasks.length);
 
         // get available task foreach position
         var availableTasks = [];
@@ -92,12 +91,11 @@ export default class App extends Component {
             availableTasks.push(_.first(_.where(tasks, {position: order.position, orderName: order.name})));
           }
         })
-
-        console.log("availableTasks", availableTasks);
+        // console.log("availableTasks", availableTasks);
 
         // get random task
         var task = availableTasks[Math.floor(Math.random()*availableTasks.length)];
-        console.log("New Task",task)
+        // console.log("NEW task",task)
 
         // check for potential conflict tasks
         var conflictTasks = _.filter(schedTasks, (f) => {
@@ -106,9 +104,7 @@ export default class App extends Component {
 
         // sort the list by start
         conflictTasks = _.sortBy(conflictTasks, (o) => {return o.start});
-
-        // console.log("task", task.orderName, task.productionName);
-        console.log("conflictTasks", conflictTasks);
+        // console.log("conflictTasks", conflictTasks);
 
         // look for a gap between end and start of all conflict
         var start = 0;
@@ -119,12 +115,11 @@ export default class App extends Component {
           // get minimal end
           var end = (start + task.duration);
 
-          console.log(start, end, conflictTask)
-          console.log("check if in outside", (conflictTask.start >= start) && (end >= conflictTask.end) )
-          console.log("check if in beteween", (conflictTask.start <= start) && (end <= conflictTask.end) )
-          console.log("check if end in between", (end <= conflictTask.end) && (conflictTask.start < end) )
-          // console.log("zero", (conflictTask.start == 0) && (start == 0) )
-          console.log("check if start in between", (conflictTask.start <= start) && (start <= conflictTask.end) )
+          // console.log(start, end, conflictTask)
+          // console.log("check if in outside", (conflictTask.start >= start) && (end >= conflictTask.end) )
+          // console.log("check if in beteween", (conflictTask.start <= start) && (end <= conflictTask.end) )
+          // console.log("check if end in between", (end <= conflictTask.end) && (conflictTask.start < end) )
+          // console.log("check if start in between", (conflictTask.start <= start) && (start <= conflictTask.end) )
 
           // if end before conflict task start then save gap
           if(
@@ -159,8 +154,7 @@ export default class App extends Component {
           task.start = 0;
           task.end = task.start + task.duration;
         }
-
-        console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
+        // console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
 
         // add it to scheduled tasks
         schedTasks.push(task);
@@ -168,7 +162,6 @@ export default class App extends Component {
         // increment position on order
         var orders = orders.map((order) => {
           if(order._id === task.orderId){
-            // console.log(order.name, order.position);
             order.position = order.position + 1;
           }
           return order;
@@ -177,12 +170,8 @@ export default class App extends Component {
         // calculate sum of order positions
         sum = 0;
         _.each(orders, (order) => {
-          // console.log(order.name, order.position);
           sum = sum + order.position;
         })
-        // becaus max position is +1
-        // sum = sum - orders.length;
-
       // end task processing
       }
 
