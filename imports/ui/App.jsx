@@ -70,88 +70,109 @@ export default class App extends Component {
       // planned tasks belong into this array
       var schedTasks = [];
 
-      // get maximum position of all tasks
-      var maxPos = _.sortBy(tasks, (task) => {return -task.position})[0].position;
+      // reset position to 1
+      var orders = orders.map((order) => {
+        order.position = 1;
+        order.maxPosition = _.where(tasks, {orderId: order._id}).length;
+        return order;
+      });
 
-      // for each position schedule the tasks
-      for (pos = 1; pos <= maxPos; pos++) {
+      // as long as the sum of position of all orders is not equel to amount of position
+      var sum = orders.length;
+      while(sum < (tasks.length + orders.length)){
+        // console.log(sum, tasks.length);
 
-        // get tasks for current position
-        var taskByPos = _.where(tasks, {position: pos});
+        // get available task foreach position
+        var availableTasks = [];
+        _.each(orders, (order) => {
 
-        // process every task in this position
-        while(taskByPos.length > 0){
-
-          // get random task
-          var task = taskByPos[Math.floor(Math.random()*taskByPos.length)];
-
-          // remove it from the position list
-          taskByPos = _.without(taskByPos, task);
-
-          // check for potential conflict tasks
-          var conflictTasks = _.filter(schedTasks, (f) => {
-            return (f.productionId == task.productionId) || (f.orderName === task.orderName)
-          });
-
-          // sort the list by start
-          conflictTasks = _.sortBy(conflictTasks, (o) => {return o.start});
-
-          console.log("task", task.orderName, task.productionName);
-          console.log("conflictTasks", conflictTasks);
-
-          // look for a gap between end and start of all conflict
-          var start = 0;
-          var beforeTask = {};
-          var afterTask = {};
-          _.each(conflictTasks, (conflictTask) => {
-
-            // get minimal end
-            var end = (start + task.duration);
-
-            console.log(start, end, conflictTask)
-            console.log("end", (end < conflictTask.end) && (conflictTask.start < end) )
-            console.log("start", (conflictTask.start < start) && (start < conflictTask.end) )
-            console.log("zero", (conflictTask.start == 0) && (start == 0) )
-
-            // if end before conflict task start then save gap
-            if(
-            // ((conflictTask.start == 0) && (start == 0)) ||
-            ((end <= conflictTask.end) && (conflictTask.start <= end)) ||
-            ((conflictTask.start <= start) && (start <= conflictTask.end))){
-              afterTask = conflictTask;
-              beforeTask = {};
-              start = conflictTask.end;
-            // else reset gap and move start and save gap
-            }else{
-              afterTask = {};
-              beforeTask = {
-                start: start,
-                end: end,
-              }
-            }
-          });
-
-          // set schedule
-          if(!_.isEmpty(beforeTask)){
-            console.log("beforeTask", beforeTask.orderName, beforeTask.productionName, beforeTask.start, beforeTask.end);
-            task.start = beforeTask.start;
-            task.end = beforeTask.end;
-          }else if(!_.isEmpty(afterTask)){
-            console.log("afterTask", afterTask.orderName, afterTask.productionName, afterTask.start, afterTask.end);
-            task.start = afterTask.end;
-            task.end = task.start + task.duration;
-          }else{
-            task.start = 0;
-            task.end = task.start + task.duration;
+          // only as long maxPosition is not exceeded
+          if(order.maxPosition >= order.position){
+            availableTasks.push(_.first(_.where(tasks, {position: order.position, orderName: order.name})));
           }
+        })
+        // console.log("availableTasks", availableTasks);
 
-          console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
+        // get random task
+        var task = availableTasks[Math.floor(Math.random()*availableTasks.length)];
+        // console.log("NEW task",task)
 
-          // add it to scheduled tasks
-          schedTasks.push(task);
+        // check for potential conflict tasks
+        var conflictTasks = _.filter(schedTasks, (f) => {
+          return (f.productionId == task.productionId) || (f.orderName === task.orderName)
+        });
+
+        // sort the list by start
+        conflictTasks = _.sortBy(conflictTasks, (o) => {return o.start});
+        // console.log("conflictTasks", conflictTasks);
+
+        // look for a gap between end and start of all conflict
+        var start = 0;
+        var beforeTask = {};
+        var afterTask = {};
+        _.each(conflictTasks, (conflictTask) => {
+
+          // get minimal end
+          var end = (start + task.duration);
+
+          // console.log(start, end, conflictTask)
+          // console.log("check if in outside", (conflictTask.start >= start) && (end >= conflictTask.end) )
+          // console.log("check if in beteween", (conflictTask.start <= start) && (end <= conflictTask.end) )
+          // console.log("check if end in between", (end <= conflictTask.end) && (conflictTask.start < end) )
+          // console.log("check if start in between", (conflictTask.start <= start) && (start <= conflictTask.end) )
+
+          // if end before conflict task start then save gap
+          if(
+            ((conflictTask.start >= start) && (end >= conflictTask.end)) ||
+            ((conflictTask.start <= start) && (end <= conflictTask.end)) ||
+            ((end <= conflictTask.end) && (conflictTask.start < end)) ||
+            ((conflictTask.start <= start) && (start <= conflictTask.end))
+          ){
+            afterTask = conflictTask;
+            beforeTask = {};
+            start = conflictTask.end;
+          // else reset gap and move start and save gap
+          }else{
+            afterTask = {};
+            beforeTask = {
+              start: start,
+              end: end,
+            }
+          }
+        });
+
+        // set schedule
+        if(!_.isEmpty(beforeTask)){
+          // console.log("beforeTask", beforeTask.orderName, beforeTask.productionName, beforeTask.start, beforeTask.end);
+          task.start = beforeTask.start;
+          task.end = beforeTask.end;
+        }else if(!_.isEmpty(afterTask)){
+          // console.log("afterTask", afterTask.orderName, afterTask.productionName, afterTask.start, afterTask.end);
+          task.start = afterTask.end;
+          task.end = task.start + task.duration;
+        }else{
+          task.start = 0;
+          task.end = task.start + task.duration;
         }
+        // console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
 
-      // end of position loop
+        // add it to scheduled tasks
+        schedTasks.push(task);
+
+        // increment position on order
+        var orders = orders.map((order) => {
+          if(order._id === task.orderId){
+            order.position = order.position + 1;
+          }
+          return order;
+        });
+
+        // calculate sum of order positions
+        sum = 0;
+        _.each(orders, (order) => {
+          sum = sum + order.position;
+        })
+      // end task processing
       }
 
       // get the full duration to process tasks

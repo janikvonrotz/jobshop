@@ -20,5 +20,5 @@ autopublish             # Publish all data to the clients (for prototyping)
 insecure                # Allow all DB writes from clients (for prototyping)
 static-html
 react-meteor-data
-twbs:bootstrap@=4.0.0-alpha.2
+twbs:bootstrap@4.0.0-alpha2
 kadira:flow-router

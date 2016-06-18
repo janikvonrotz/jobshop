@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Alert } from './bootstrap/index.jsx';
 
+// Chart: { factor, data: { duration, data: { labelY: [{ start, end, labelItem, labelY, color }] } } }
+
 export default class Chart extends Component {
 
   renderChart(data){
