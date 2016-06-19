@@ -6,7 +6,7 @@ import { Navbar, NavbarNav, GridColumn, GridRow } from './bootstrap/index.jsx';
 
 const App = (props) => (
   <div className="app-root container">
-    <Navbar id="app-header" brandLink="/" brand="Flowshop">
+    <Navbar id="app-header" brandLink="/" brand="flowshop">
       <NavbarNav items={ props.items.left } />
     </Navbar>
     {props.main}
