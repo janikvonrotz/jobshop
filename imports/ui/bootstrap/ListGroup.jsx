@@ -2,8 +2,17 @@ import React from 'react';
 
 export default class ListGroup extends React.Component {
 
-  // ListGroup:{ iconClassName, linked, draggable, items: {key, label, href, labelPill} }
-  // onDrop(sourceId, trargetId)
+  /*
+  ListGroup: {
+    iconClassName,
+    linked,
+    draggable,
+    items: {
+      key, label, href, labelPill
+    }
+  }
+  onDrop(sourceId, trargetId)
+  */
 
   isbefore(a, b) {
     if (a.parentNode == b.parentNode) {

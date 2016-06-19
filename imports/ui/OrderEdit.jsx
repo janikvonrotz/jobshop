@@ -76,7 +76,8 @@ export default class OrderEdit extends Component {
   }
 
   render() {
-    if(!this.props.order){return (<Alert style="warning">Order loading ...</Alert>)}
+    const order = this.props.order;
+    if(!order){return (<Alert style="warning">Order loading ...</Alert>)}
     return (
       <GridRow className="order-edit"><GridColumn className="col-md-8 col-md-offset-2">
         <PageHeader tag="h1">Order Edit</PageHeader>
@@ -86,13 +87,23 @@ export default class OrderEdit extends Component {
             <Label>Name</Label>
             <Input
             name="name"
-            defaultValue={this.props.order.name}
+            defaultValue={order.name}
             onChange={this.update.bind(this)} />
           </FormGroup>
+
+          <FormGroup>
+            <Label>Delivery Until</Label>
+            <Input
+            name="delivery"
+            type="number"
+            defaultValue={order.delivery}
+            onChange={this.update.bind(this)} />
+          </FormGroup>
+
         </Form>
         <p><Button style="primary" onClick={this.toggleModal.bind(this)}>Add Production</Button></p>
 
-        {this.renderProductionList(this.props.order.productions)}
+        {this.renderProductionList(order.productions)}
         <p></p>
 
         <Modal

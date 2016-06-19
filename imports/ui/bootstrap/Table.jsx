@@ -2,6 +2,18 @@ import React from 'react';
 
 export default class Table extends React.Component {
 
+  /*
+  Table: {
+    headers: [],
+    items: [{
+      _id,
+      key: value,
+    }],
+    renderCell: (header, value, callback, itemId),
+    callback: (itemId, event)
+  }
+  */
+
   update(event){
     this.props.update(event);
   }

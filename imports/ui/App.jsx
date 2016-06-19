@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, Table } from './bootstrap/index.jsx';
 import Chart from './Chart.jsx';
 import * as Notification from 'notie';
 
@@ -176,7 +176,7 @@ export default class App extends Component {
       }
 
       // get the full duration to process tasks
-      var duration = _.first(_.sortBy(schedTasks, (task) => {return -task.end})).end;
+      var maxDuration = _.first(_.sortBy(schedTasks, (task) => {return -task.end})).end;
 
       // format data for charting
       var data = schedTasks.map((task) => {
@@ -192,13 +192,33 @@ export default class App extends Component {
       // sort by order label
       var data = _.sortBy(data, (task) => {return task.labelY});
 
+      // add delivery due dates to dataset
+      deadline = _.groupBy(orders.map((order) => {
+
+        // get duration for each order
+        var duration = _.first(_.sortBy(
+          _.where(data, {labelY: order.name}), (o) => {return -o.end})).end
+
+        // set max duration for graphs
+        if(order.deliver > maxDuration){
+          maxDuration = order.delivery
+        }
+
+        // get delay for each order
+        var delay = duration - order.delivery;
+
+        return {labelY: order.name, delivery: order.delivery, duration: duration, delay: delay}
+
+      }), (g) => {return g.labelY});
+
       // groupBy label
       data = _.groupBy(data, (g) => {return g.labelY});
 
       // update dataset state
       datasets.push({
-        duration: duration,
-        data: data
+        duration: maxDuration,
+        data: data,
+        deadline: deadline
       });
       this.setState({
         datasets: datasets
@@ -217,10 +237,23 @@ export default class App extends Component {
     // })
   }
 
+  // render a table for every charts
+  renderChartTable(dataset){
+    var items = _.sortBy(_.map(dataset.deadline, (value, key) => {
+      return {_id: key, delivery: value[0].delivery, duration: value[0].duration, delay: value[0].delay}
+    }), (s) => {return s._id});
+
+    return (<Table headers={["Order", "Delivery", "Duration", "Delay"]} items={items} />)
+  }
+
   // render charts foreach dataset
   renderCharts(datasets){
     return datasets.map((dataset) => {
-      return (<Chart data={dataset} factor="3" />);
+      return (
+        <div>
+          <Chart data={dataset} factor="3" />
+          {this.renderChartTable(dataset)}
+        </div>);
     })
   }
 

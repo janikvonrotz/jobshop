@@ -2,7 +2,27 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { Alert } from './bootstrap/index.jsx';
 
-// Chart: { factor, data: { duration, data: { labelY: [{ start, end, labelItem, labelY, color }] } } }
+/*
+Chart: {
+  factor, data: {
+    duration,
+    data: {
+      labelY: [{
+        start,
+        end,
+        labelItem,
+        labelY,
+        color
+      }],
+    },
+    labelY: [{
+      labelY,
+      delivery,
+      delay
+    }]
+  }
+}
+*/
 
 export default class Chart extends Component {
 
@@ -14,6 +34,7 @@ export default class Chart extends Component {
           {value.map((cell) => {
             return this.renderColumn(cell);
           })}
+          {this.renderDeliveryMark(key)}
         </div>
       );
     });
@@ -41,6 +62,22 @@ export default class Chart extends Component {
     return(
       <div key={cell.labelY + cell.labelItem} className="chart-column" style={columnStyle}>
         <p>{cell.labelItem}</p>
+      </div>
+    );
+  }
+
+  renderDeliveryMark(key){
+    var delivery = this.props.data.deadline[key][0].delivery * this.props.factor;
+
+    var columnStyle = {
+      backgroundColor: 'black',
+      width: 0.5 + 'em',
+      marginLeft: (delivery - 0.5) + 'em',
+    };
+
+    return(
+      <div key={key + delivery} className="chart-column" style={columnStyle}>
+        <p>I</p>
       </div>
     );
   }

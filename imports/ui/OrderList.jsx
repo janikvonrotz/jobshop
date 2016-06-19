@@ -11,6 +11,7 @@ export default class OrderList extends Component {
       name: "name",
       createdAt: new Date(),
       productions: [],
+      delivery: 1,
     });
     FlowRouter.go("/orders/" + id)
   }
