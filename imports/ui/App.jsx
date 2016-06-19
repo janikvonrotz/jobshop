@@ -200,7 +200,7 @@ export default class App extends Component {
           _.where(data, {labelY: order.name}), (o) => {return -o.end})).end
 
         // set max duration for graphs
-        if(order.deliver > maxDuration){
+        if(order.delivery > maxDuration){
           maxDuration = order.delivery
         }
 
