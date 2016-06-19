@@ -1,15 +1,10 @@
+Meteor app to solve the flowshop problem with tabu search.
 
-# Flowshop Software
+![](https://raw.githubusercontent.com/janikvonrotz/flowshop/master/Screenshot.png)
 
-# Todo
+# [Demo](https://flowshop.herokuapp.com/)
 
-Enhance Positioning system
-
-begin with the first position.
-if tasks is sheduled, take the next of this order into position
-this means position specific on an order
-
-# source
+# Resources
 
 Start new Meteor Project
 https://www.meteor.com/tutorials/react/creating-an-app
@@ -28,3 +23,6 @@ http://www.htmlgoodies.com/beyond/css/css-ref/create-a-chart-plot-line-using-a-p
 
 Bar Chart
 http://ndvo.blog.br/programming/how-create-simple-html-and-css-chart/
+
+Deploy to Heroku
+http://justmeteor.com/blog/deploy-to-production-on-heroku/
