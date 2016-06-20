@@ -1,4 +1,4 @@
-Meteor app to solve the jobshop problem with tabu search.
+Meteor app to solve the jobshop problem.
 
 ![](https://raw.githubusercontent.com/janikvonrotz/jobshop/master/screenshot.png)
 
