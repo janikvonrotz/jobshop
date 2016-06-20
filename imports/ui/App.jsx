@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, Table, Checkbox } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, Table, Checkbox, PageHeader } from './bootstrap/index.jsx';
 import Chart from './Chart.jsx';
 import * as Notification from 'notie';
 
@@ -12,15 +12,23 @@ export default class App extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {datasets: []};
+    this.state = {
+      datasets: [],
+      fixedOrder: true,
+      showResults: false,
+    };
+  }
+
+  updateState(key, value, event){
+    var state = this.state;
+    state[key] = value
+    this.setState(state);
   }
 
   calculate(){
 
     // get form input
     var rounds = ReactDOM.findDOMNode(this.refs.rounds).value;
-    var fixOrder = ReactDOM.findDOMNode(this.refs.fixOrder);
-    fixOrder = true
 
     // reset datasets
     this.setState({
@@ -104,59 +112,38 @@ export default class App extends Component {
         });
 
         // sort the list by start
-        conflictTasks = _.sortBy(conflictTasks, (o) => {return o.start});
+        conflictTasks = _.sortBy(conflictTasks, (o) => {return o.end});
         // console.log("conflictTasks", conflictTasks);
 
         // look for a gap between end and start of all conflict
-        var start = 0;
-        var beforeTask = {};
-        var afterTask = {};
+        task.start = 0;
+        task.end = (task.start + task.duration);
         _.each(conflictTasks, (conflictTask) => {
 
           // get minimal end
-          var end = (start + task.duration);
+          task.end = (task.start + task.duration);
 
-          // console.log(start, end, conflictTask)
-          // console.log("check if before", (conflictTask.orderName === task.orderName) && fixOrder )
-          // console.log("check if in outside", (conflictTask.start >= start) && (end >= conflictTask.end) )
-          // console.log("check if in beteween", (conflictTask.start <= start) && (end <= conflictTask.end) )
-          // console.log("check if end in between", (end <= conflictTask.end) && (conflictTask.start < end) )
-          // console.log("check if start in between", (conflictTask.start <= start) && (start <= conflictTask.end) )
+          // console.log("before update task", task.orderName, task.productionName, task.start, task.end);
+          // console.log("conflict task", conflictTask.orderName, conflictTask.productionName, conflictTask.start, conflictTask.end);
+          // console.log("check for order task", (conflictTask.orderName === task.orderName) && this.state.fixedOrder)
+          // console.log("check if wrapping", (conflictTask.start >= task.start) && (task.end >= conflictTask.end) )
+          // console.log("check if in between", (conflictTask.start <= task.start) && (task.end <= conflictTask.end) )
+          // console.log("check if end in between", (task.end <= conflictTask.end) && (conflictTask.start < task.end) )
+          // console.log("check if start in between", (conflictTask.start <= task.start) && (task.start <= conflictTask.end) )
 
-          // if end before conflict task start then save gap
+          // if task is in conflict move it after the conflict task
           if(
-            ((conflictTask.orderName === task.orderName) && fixOrder) ||
-            ((conflictTask.start >= start) && (end >= conflictTask.end)) ||
-            ((conflictTask.start <= start) && (end <= conflictTask.end)) ||
-            ((end <= conflictTask.end) && (conflictTask.start < end)) ||
-            ((conflictTask.start <= start) && (start <= conflictTask.end))
+            ((conflictTask.orderName === task.orderName) && this.state.fixedOrder) ||
+            ((conflictTask.start >= task.start) && (task.end >= conflictTask.end)) ||
+            ((conflictTask.start <= task.start) && (task.end <= conflictTask.end)) ||
+            ((task.end <= conflictTask.end) && (conflictTask.start < task.end)) ||
+            ((conflictTask.start <= task.start) && (task.start <= conflictTask.end))
           ){
-            afterTask = conflictTask;
-            beforeTask = {};
-            start = conflictTask.end;
-          // else reset gap and move start and save gap
-          }else{
-            afterTask = {};
-            beforeTask = {
-              start: start,
-              end: end,
-            }
+            task.start = conflictTask.end;
+            task.end = (task.start + task.duration);
+            // console.log("updated task", task.orderName, task.productionName, task.start, task.end);
           }
         });
-
-        // set schedule
-        if(!_.isEmpty(beforeTask)){
-          // console.log("beforeTask", beforeTask.orderName, beforeTask.productionName, beforeTask.start, beforeTask.end);
-          task.start = beforeTask.start;
-          task.end = beforeTask.end;
-        }else if(!_.isEmpty(afterTask)){
-          // console.log("afterTask", afterTask.orderName, afterTask.productionName, afterTask.start, afterTask.end);
-          task.start = afterTask.end;
-          task.end = task.start + task.duration;
-        }else{
-          task.start = 0;
-          task.end = task.start + task.duration;
-        }
         // console.log("FINAL task", task.orderName, task.productionName, task.start, task.end);
 
         // add it to scheduled tasks
@@ -196,7 +183,7 @@ export default class App extends Component {
       var data = _.sortBy(data, (task) => {return task.labelY});
 
       // add delivery due dates to dataset
-      deadline = _.groupBy(orders.map((order) => {
+      var deadlines = _.groupBy(orders.map((order) => {
 
         // get duration for each order
         var duration = _.first(_.sortBy(
@@ -214,14 +201,26 @@ export default class App extends Component {
 
       }), (g) => {return g.labelY});
 
+      // foreach deadline add sum of delay
+      var delay = 0;
+      _.map(deadlines, (value, key) => {
+        if(value[0].delay > 0){
+          delay += value[0].delay;
+        }
+      });
+
       // groupBy label
       data = _.groupBy(data, (g) => {return g.labelY});
+
+      // get filtered datasets
+      var filteredData = {};
 
       // update dataset state
       datasets.push({
         duration: maxDuration,
+        delay: delay,
         data: data,
-        deadline: deadline
+        deadline: deadlines
       });
       this.setState({
         datasets: datasets
@@ -229,15 +228,6 @@ export default class App extends Component {
 
     // end of a round
     }
-
-    // Meteor.call("calculate", rounds, (err, res) => {
-    //   if(err){
-    //     console.log(err)
-    //     Notification.alert(3, err.error, 2.5);
-    //   }else{
-    //     console.log(res);
-    //   }
-    // })
   }
 
   // render a table for every charts
@@ -251,16 +241,51 @@ export default class App extends Component {
 
   // render charts foreach dataset
   renderCharts(datasets){
-    return datasets.map((dataset) => {
-      return (
-        <div>
-          <Chart data={dataset} factor="3" />
-          {this.renderChartTable(dataset)}
-        </div>);
-    })
+
+    if(datasets.length == 0){return (<p></p>)}
+
+    // get filtered tables
+    var filteredDatasets = {
+      "Best": _.first(_.sortBy(datasets, (s) => {return s.delay})),
+      "Worst":  _.first(_.sortBy(datasets, (s) => {return -s.delay})),
+      "First": _.first(datasets),
+      "Last": _.last(datasets),
+    };
+
+    var allResultsHeader, allResults
+    if(this.state.showResults){
+      var allResultsHeader = <PageHeader tag="h1">All Results</PageHeader>;
+      var allResults = datasets.map((dataset) => {
+        return (
+          <div>
+            <Chart data={dataset} factor="3" />
+            {this.renderChartTable(dataset)}
+          </div>
+        );
+      });
+    }
+
+    // show all results
+    return(
+      <div>
+        {_.map(filteredDatasets, (value, key) => {
+          return (
+            <div>
+              <PageHeader tag="h1">{key}</PageHeader>
+              <Chart data={value} factor="3" />
+              {this.renderChartTable(value)}
+              <p></p>
+            </div>
+          );
+        })}
+        {allResultsHeader}
+        {allResults}
+      </div>
+    )
   }
 
   render() {
+
     return (
       <div className="dashboard">
         <h1>Dashboard</h1>
@@ -271,20 +296,18 @@ export default class App extends Component {
           <FormGroup>
             <Label>Rounds</Label>
             <Input
-            ref="rounds" type="number" defaultValue="1" />
+            ref="rounds" type="number" defaultValue="10" />
           </FormGroup>
-          <FormGroup>
-            <Checkbox
-            label="Fix Order"
-            ref="fixOrder"
-            defaultValue="true" />
-          </FormGroup>
-          <FormGroup>
-            <Checkbox
-            label="Show All Results"
-            ref="showResults"
-            defaultValue="true" />
-          </FormGroup>
+          <Checkbox
+          label="Fixed Order"
+          name="fixedOrder"
+          defaultChecked={true}
+          onClick={this.updateState.bind(this)} />
+          <Checkbox
+          label="Show All Results"
+          name="showResults"
+          defaultChecked={false}
+          onClick={this.updateState.bind(this)} />
         </Form>
         <p><Button style="primary" onClick={this.calculate.bind(this)}>Calculate</Button></p>
 

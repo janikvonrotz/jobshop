@@ -1,17 +1,8 @@
-Meteor app to solve the flowshop problem with tabu search.
+Meteor app to solve the jobshop problem with tabu search.
 
-![](https://raw.githubusercontent.com/janikvonrotz/flowshop/master/Screenshot.png)
+![](https://raw.githubusercontent.com/janikvonrotz/jobshop/master/screenshot.png)
 
 # [Demo](https://jobshopdemo.herokuapp.com/)
-
-# Todo
-
-* Show filtered result: First, Best, Wort (ranking by sum of delay)
-* Add button to display all of the results
-
-# Done
-
-* Fix order! As long  there is a conflictTask with same order move!
 
 # Resources
 

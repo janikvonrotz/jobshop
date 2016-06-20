@@ -3,32 +3,19 @@ import Label from './Label.jsx';
 
 export default class Checkbox extends React.Component {
 
-  constructor(props){
-    super(props);
-    this.state={
-      checked: Boolean(props.defaultValue)
-    }
-  }
-
-  handleClick(event) {
-    this.setState({checked: event.target.checked});
-    React.findDOMNode(this).value = event.target.value
+  handleClick(event){
+    this.props.onClick(this.props.name, event.target.checked, event);
   }
 
   render() {
-    console.log(this.state, this.props)
     return(
       <div className="checkbox">
       <Label>
-
         <input
-        ref={this.props.ref}
         type="checkbox"
         name={this.props.name}
-        checked={this.state.checked}
-        onClick={this.handleClick.bind(this)}
-        defaultValue={this.state.checked} />
-
+        defaultChecked={this.props.defaultChecked}
+        onClick={this.handleClick.bind(this)} />
         {this.props.label ? " " + this.props.label : ""}
       </Label>
       </div>
