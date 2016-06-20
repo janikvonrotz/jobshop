@@ -2,7 +2,16 @@ Meteor app to solve the flowshop problem with tabu search.
 
 ![](https://raw.githubusercontent.com/janikvonrotz/flowshop/master/Screenshot.png)
 
-# [Demo](https://flowshop.herokuapp.com/)
+# [Demo](https://jobshopdemo.herokuapp.com/)
+
+# Todo
+
+* Show filtered result: First, Best, Wort (ranking by sum of delay)
+* Add button to display all of the results
+
+# Done
+
+* Fix order! As long  there is a conflictTask with same order move!
 
 # Resources
 
@@ -26,3 +35,6 @@ http://ndvo.blog.br/programming/how-create-simple-html-and-css-chart/
 
 Deploy to Heroku
 http://justmeteor.com/blog/deploy-to-production-on-heroku/
+
+Productive deployment blank page
+https://forums.meteor.com/t/meteor-app-works-locally-but-shows-blank-page-when-deployed-how-to-debug/16838/5

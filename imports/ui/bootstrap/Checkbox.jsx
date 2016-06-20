@@ -3,44 +3,35 @@ import Label from './Label.jsx';
 
 export default class Checkbox extends React.Component {
 
-  renderCheckbox(){
-    if ( this.props.defaultValue ) {
-      return (
-        <input
-        defaultChecked={ true }
-        type="checkbox"
-        name={ this.props.name }
-        id={ this.props.id }
-        onChange={ this.props.onChange }
-        onClick={ this.toggleCheckbox } />
-      );
-    } else {
-      return (
-        <input
-        type="checkbox"
-        name={ this.props.name }
-        id={ this.props.id }
-        onChange={ this.props.onChange } />
-      );
+  constructor(props){
+    super(props);
+    this.state={
+      checked: Boolean(props.defaultValue)
     }
   }
 
+  handleClick(event) {
+    this.setState({checked: event.target.checked});
+    React.findDOMNode(this).value = event.target.value
+  }
+
   render() {
-    if(this.props.label){
-      return(
-        <div className="checkbox">
-        <Label>
-          {this.renderCheckbox()}
-          {this.props.label}
-        </Label>
-        </div>
-      )
-    }else{
-      return (
-        <div className="checkbox">
-          {this.renderCheckbox()}
-        </div>
-      );
-    }
+    console.log(this.state, this.props)
+    return(
+      <div className="checkbox">
+      <Label>
+
+        <input
+        ref={this.props.ref}
+        type="checkbox"
+        name={this.props.name}
+        checked={this.state.checked}
+        onClick={this.handleClick.bind(this)}
+        defaultValue={this.state.checked} />
+
+        {this.props.label ? " " + this.props.label : ""}
+      </Label>
+      </div>
+    );
   }
 }

@@ -4,7 +4,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import ReactDOM from 'react-dom';
 import { Orders } from '../api/orders.js';
 import { Productions } from '../api/productions.js';
-import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, Table } from './bootstrap/index.jsx';
+import { Alert, Form, FormGroup, Input, Label, Button, GridRow, GridColumn, Table, Checkbox } from './bootstrap/index.jsx';
 import Chart from './Chart.jsx';
 import * as Notification from 'notie';
 
@@ -19,7 +19,8 @@ export default class App extends Component {
 
     // get form input
     var rounds = ReactDOM.findDOMNode(this.refs.rounds).value;
-    var maxDuration = ReactDOM.findDOMNode(this.refs.maxDuration).value;
+    var fixOrder = ReactDOM.findDOMNode(this.refs.fixOrder);
+    fixOrder = true
 
     // reset datasets
     this.setState({
@@ -116,6 +117,7 @@ export default class App extends Component {
           var end = (start + task.duration);
 
           // console.log(start, end, conflictTask)
+          // console.log("check if before", (conflictTask.orderName === task.orderName) && fixOrder )
           // console.log("check if in outside", (conflictTask.start >= start) && (end >= conflictTask.end) )
           // console.log("check if in beteween", (conflictTask.start <= start) && (end <= conflictTask.end) )
           // console.log("check if end in between", (end <= conflictTask.end) && (conflictTask.start < end) )
@@ -123,6 +125,7 @@ export default class App extends Component {
 
           // if end before conflict task start then save gap
           if(
+            ((conflictTask.orderName === task.orderName) && fixOrder) ||
             ((conflictTask.start >= start) && (end >= conflictTask.end)) ||
             ((conflictTask.start <= start) && (end <= conflictTask.end)) ||
             ((end <= conflictTask.end) && (conflictTask.start < end)) ||
@@ -271,16 +274,20 @@ export default class App extends Component {
             ref="rounds" type="number" defaultValue="1" />
           </FormGroup>
           <FormGroup>
-            <Label>Duration Maximum</Label>
-            <Input
-            ref="maxDuration" type="number" defaultValue="100" />
+            <Checkbox
+            label="Fix Order"
+            ref="fixOrder"
+            defaultValue="true" />
+          </FormGroup>
+          <FormGroup>
+            <Checkbox
+            label="Show All Results"
+            ref="showResults"
+            defaultValue="true" />
           </FormGroup>
         </Form>
         <p><Button style="primary" onClick={this.calculate.bind(this)}>Calculate</Button></p>
 
-        </GridColumn>
-        <GridColumn className="col-sm-6">
-          <p>Tabulist</p>
         </GridColumn>
         </GridRow>
         <GridRow className="charts">

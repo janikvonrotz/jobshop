@@ -1,5 +1,5 @@
 {
-  "name": "flowshop",
+  "name": "jobshop",
   "private": true,
   "scripts": {
     "dev": "meteor run"
