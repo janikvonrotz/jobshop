@@ -9,7 +9,7 @@ Meteor app to solve the jobshop problem.
 1. Download and install [Meteor](https://www.meteor.com/install).
 2. Clone or download this project and open command line in the project folder.
 3. Run `Meteor npm install`.
-4. Run `Meteor` and open [http:7localhost:3000](localhost:3000).
+4. Run `Meteor` and open a browser on `http://localhost:3000`.
 
 # Resources
 

@@ -60,7 +60,6 @@ routepolicy@1.0.11
 spacebars@1.0.12
 spacebars-compiler@1.0.12
 standard-minifier-css@1.0.7
-standard-minifier-js@1.0.7
 static-html@1.0.9
 templating-tools@1.0.4
 tmeasday:check-npm-versions@0.2.0
