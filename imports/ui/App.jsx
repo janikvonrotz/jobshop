@@ -27,13 +27,13 @@ export default class App extends Component {
 
   calculate(){
 
+    // start for calculation time
+    var startTime = new Date();
+
     // get form input
     var rounds = ReactDOM.findDOMNode(this.refs.rounds).value;
 
     // reset datasets
-    this.setState({
-      datasets: []
-    });
     var datasets = [];
 
     // get data
@@ -215,6 +215,10 @@ export default class App extends Component {
       // get filtered datasets
       var filteredData = {};
 
+      // get calcuation time in millisceonds
+      var endTime = new Date();
+      var diffTime = endTime - startTime;
+
       // update dataset state
       datasets.push({
         duration: maxDuration,
@@ -223,7 +227,8 @@ export default class App extends Component {
         deadline: deadlines
       });
       this.setState({
-        datasets: datasets
+        datasets: datasets,
+        cacluationTime: diffTime,
       });
 
     // end of a round
@@ -268,6 +273,7 @@ export default class App extends Component {
     // show all results
     return(
       <div>
+        <p>Cacluation time: {this.state.cacluationTime} ms</p>
         {_.map(filteredDatasets, (value, key) => {
           return (
             <div>
@@ -285,7 +291,6 @@ export default class App extends Component {
   }
 
   render() {
-
     return (
       <div className="dashboard">
         <h1>Dashboard</h1>
@@ -316,7 +321,14 @@ export default class App extends Component {
         <GridRow className="charts">
         <GridColumn className="col-sm-12">
 
-        {this.renderCharts(this.state.datasets)}
+        {(() => {
+          // todo loading screen
+          if(false){
+            return (<Alert style="info">Data loading ...</Alert>)
+          }else{
+            return this.renderCharts(this.state.datasets)
+          }
+        })()}
 
         </GridColumn>
         </GridRow>
