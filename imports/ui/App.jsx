@@ -273,7 +273,7 @@ export default class App extends Component {
     // show all results
     return(
       <div>
-        <p>Cacluation time: {this.state.cacluationTime} ms</p>
+        <p>Calcluation time: {this.state.cacluationTime} ms</p>
         {_.map(filteredDatasets, (value, key) => {
           return (
             <div>
