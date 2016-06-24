@@ -19,7 +19,8 @@ export default AppContainer = createContainer(props => {
       left: [
         { uid: 'index', href: '/', label: 'Dashboard' },
         { uid: 'order.list', href: '/orders', label: 'Orders' },
-        { uid: 'production.list', href: '/productions', label: 'Productions' }
+        { uid: 'production.list', href: '/productions', label: 'Productions' },
+        { uid: 'about', href: '/about', label: 'About' }
       ]
     }
   };

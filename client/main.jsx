@@ -4,6 +4,7 @@ import { mount } from 'react-mounter';
 
 import AppContainer from '../imports/ui/AppContainer.jsx';
 import App from '../imports/ui/App.jsx';
+import About from '../imports/ui/About.jsx';
 import OrderList from '../imports/ui/OrderList.jsx';
 import OrderEdit from '../imports/ui/OrderEdit.jsx';
 import ProductionList from '../imports/ui/ProductionList.jsx';
@@ -14,6 +15,15 @@ FlowRouter.route('/', {
   action() {
     mount(AppContainer, {
       main: <App/>,
+    });
+  },
+});
+
+FlowRouter.route('/about', {
+  name: 'index',
+  action() {
+    mount(AppContainer, {
+      main: <About/>,
     });
   },
 });
